@@ -102,14 +102,14 @@ importances = pd.Series(
     index=model.feature_names_in_
 ).sort_values(ascending=False).head(10)
 
-fig, ax = plt.subplots()
-importances.plot(kind="barh", ax=ax)
-ax.invert_yaxis()
-ax.set_xlabel("Importancia")
-ax.set_title("Top 10 Variables")
+st.subheader("📈 Variables más importantes")
 
-st.pyplot(fig)
+importances = pd.Series(
+    model.feature_importances_,
+    index=model.feature_names_in_
+).sort_values(ascending=False).head(10)
 
+st.bar_chart(importances)
 # ===============================
 # EXPLICACIÓN TÉCNICA
 # ===============================
