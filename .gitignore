@@ -3,4 +3,5 @@ __pycache__/
 *.pyc
 .env
 .ipynb_checkpoints/
-models/*.pkl
+
+models/random_forest_model.pkl
