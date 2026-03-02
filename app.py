@@ -11,7 +11,7 @@ MODEL_PATH = "models/random_forest_model.pkl"
 
 @st.cache_resource
 def train_model():
-    df = pd.read_csv("data/raw/delitos_2022.csv")
+    df = pd.read_csv("data/delitos_small.csv")
 
     # Usar solo una muestra para que sea más rápido
     df = df.sample(n=20000, random_state=42)
