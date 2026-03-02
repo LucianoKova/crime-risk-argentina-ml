@@ -9,8 +9,12 @@ st.title("Predicción de Uso de Arma en Delitos - CABA")
 
 MODEL_PATH = "models/random_forest_model.pkl"
 
+@st.cache_resource
 def train_model():
     df = pd.read_csv("data/raw/delitos_2022.csv")
+
+    # Usar solo una muestra para que sea más rápido
+    df = df.sample(n=20000, random_state=42)
 
     X = df[["franja", "comuna", "uso_moto", "tipo"]]
     y = df["uso_arma"]
@@ -22,7 +26,7 @@ def train_model():
     )
 
     model = RandomForestClassifier(
-        n_estimators=50,  # más liviano
+        n_estimators=30,  # menos árboles = más rápido
         random_state=42,
         class_weight="balanced"
     )
