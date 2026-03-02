@@ -4,12 +4,6 @@ import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 
-fig, ax = plt.subplots()
-importances.plot(kind="barh", ax=ax)
-ax.set_xlabel("Importancia")
-ax.set_ylabel("Variable")
-st.pyplot(fig)
-
 # ===============================
 # CONFIGURACIÓN
 # ===============================
