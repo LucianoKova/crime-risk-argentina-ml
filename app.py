@@ -4,6 +4,12 @@ import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 
+fig, ax = plt.subplots()
+importances.plot(kind="barh", ax=ax)
+ax.set_xlabel("Importancia")
+ax.set_ylabel("Variable")
+st.pyplot(fig)
+
 # ===============================
 # CONFIGURACIÓN
 # ===============================
@@ -95,21 +101,27 @@ st.markdown(
 # ===============================
 # IMPORTANCIA DE VARIABLES
 # ===============================
+st.markdown("---")
 st.subheader("📈 Variables más importantes")
 
 importances = pd.Series(
     model.feature_importances_,
     index=model.feature_names_in_
-).sort_values(ascending=False).head(10)
+).sort_values(ascending=True).tail(8)
 
-st.subheader("📈 Variables más importantes")
+# Limpiar nombres técnicos
+def clean_name(name):
+    name = name.replace("tipo_", "")
+    name = name.replace("uso_moto_", "Moto ")
+    name = name.replace("franja", "Franja horaria")
+    name = name.replace("comuna", "Comuna")
+    return name
 
-importances = pd.Series(
-    model.feature_importances_,
-    index=model.feature_names_in_
-).sort_values(ascending=False).head(10)
+importances.index = [clean_name(col) for col in importances.index]
 
+# Gráfico horizontal más profesional
 st.bar_chart(importances)
+
 # ===============================
 # EXPLICACIÓN TÉCNICA
 # ===============================
