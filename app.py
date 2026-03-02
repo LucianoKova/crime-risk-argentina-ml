@@ -1,38 +1,38 @@
-import streamlit as st
+import os
 import pandas as pd
+import streamlit as st
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
 import joblib
 
 st.title("Predicción de Uso de Arma en Delitos - CABA")
 
-# Cargar modelo
-model = joblib.load("models/random_forest_model.pkl")
+MODEL_PATH = "models/random_forest_model.pkl"
 
-# Inputs del usuario
-franja = st.slider("Franja horaria (0-23)", 0, 23, 18)
-comuna = st.selectbox("Comuna", list(range(1, 16)))
-uso_moto = st.selectbox("¿Uso de moto?", ["NO", "SI"])
-tipo = st.selectbox("Tipo de delito", ["Robo", "Hurto", "Lesiones", "Vialidad"])
+def train_model():
+    df = pd.read_csv("data/raw/delitos_2022.csv")
 
-# Crear DataFrame
-input_data = pd.DataFrame({
-    "franja": [franja],
-    "comuna": [comuna],
-    "uso_moto": [uso_moto],
-    "tipo": [tipo]
-})
+    X = df[["franja", "comuna", "uso_moto", "tipo"]]
+    y = df["uso_arma"]
 
-# One-hot encoding igual que entrenamiento
-input_data = pd.get_dummies(input_data)
+    X = pd.get_dummies(X, drop_first=True)
 
-# Alinear columnas con modelo
-input_data = input_data.reindex(columns=model.feature_names_in_, fill_value=0)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
 
-if st.button("Predecir"):
-    proba = model.predict_proba(input_data)[0][1]
-    
-    st.write(f"Probabilidad estimada de uso de arma: {proba:.2%}")
-    
-    if proba > 0.5:
-        st.error("Alta probabilidad de uso de arma")
-    else:
-        st.success("Baja probabilidad de uso de arma")
+    model = RandomForestClassifier(
+        n_estimators=50,  # más liviano
+        random_state=42,
+        class_weight="balanced"
+    )
+
+    model.fit(X_train, y_train)
+    return model
+
+# Intentar cargar modelo
+if os.path.exists(MODEL_PATH):
+    model = joblib.load(MODEL_PATH)
+else:
+    st.warning("Modelo no encontrado. Entrenando modelo...")
+    model = train_model()
