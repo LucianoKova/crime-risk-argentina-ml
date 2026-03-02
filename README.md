@@ -1,3 +1,7 @@
+## 🔗 Live Demo
+
+👉 https://crime-risk-argentina-ml-aw7jaudckvrfvbtjfnvdcr.streamlit.app/
+
 # Crime Risk Argentina - ML Project
 
 Machine Learning project focused on predicting weapon usage in urban crimes in Buenos Aires (CABA, 2022).
