@@ -16,8 +16,10 @@ st.set_page_config(
 st.title("🔎 Predicción de Uso de Arma en Delitos - CABA")
 
 st.markdown(
-    "Modelo Random Forest entrenado con datos oficiales de delitos CABA 2022. "
-    "El sistema estima la probabilidad de que un hecho delictivo involucre uso de arma."
+    """
+Modelo de Machine Learning (Random Forest) entrenado con datos oficiales de delitos en CABA (2022).  
+El sistema estima la probabilidad de que un hecho delictivo involucre uso de arma.
+"""
 )
 
 # ===============================
@@ -35,6 +37,7 @@ model = joblib.load(MODEL_PATH)
 # ===============================
 # INPUTS DEL USUARIO
 # ===============================
+st.markdown("---")
 st.subheader("📊 Datos del delito")
 
 franja = st.slider("Franja horaria (0–23)", 0, 23, 18)
@@ -88,7 +91,7 @@ st.markdown(
 - Accuracy aproximada: ~0.89  
 - Recall clase 'SI' (uso de arma): ~0.29  
 - Dataset con fuerte desbalance de clases  
-- Se utilizó `class_weight="balanced"` para compensar minoría  
+- Se utilizó `class_weight="balanced"`  
 """
 )
 
@@ -103,7 +106,6 @@ importances = pd.Series(
     index=model.feature_names_in_
 ).sort_values(ascending=True).tail(8)
 
-# Limpiar nombres técnicos
 def clean_name(name):
     name = name.replace("tipo_", "")
     name = name.replace("uso_moto_", "Moto ")
@@ -113,21 +115,27 @@ def clean_name(name):
 
 importances.index = [clean_name(col) for col in importances.index]
 
-# Gráfico horizontal más profesional
-st.bar_chart(importances)
+# Gráfico estático profesional (sin tooltip)
+fig, ax = plt.subplots()
+ax.barh(importances.index, importances.values)
+ax.set_xlabel("Importancia")
+ax.set_ylabel("Variable")
+plt.tight_layout()
+
+st.pyplot(fig)
 
 # ===============================
-# EXPLICACIÓN TÉCNICA
+# CONSIDERACIONES TÉCNICAS
 # ===============================
 st.markdown("---")
 st.subheader("🧠 Consideraciones Técnicas")
 
 st.markdown(
 """
-El problema presenta un fuerte desbalance de clases 
+El problema presenta un fuerte desbalance de clases  
 (la mayoría de los delitos no involucran uso de arma).
 
-Para mitigar esto:
+Para mitigarlo:
 
 - Se utilizó `class_weight="balanced"`
 - Se priorizó recall sobre accuracy pura
